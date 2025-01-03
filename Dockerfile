@@ -12,4 +12,4 @@ COPY ./ ./
 
 EXPOSE 5000
 
-CMD ["forever", "run", "index.js"]
+CMD ["run", "index.js"]
