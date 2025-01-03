@@ -6,6 +6,8 @@ COPY package.json package-lock.json ./
 
 RUN npm install
 
+# Install forever globally
+RUN npm install -g forever
 COPY ./ ./
 
 EXPOSE 5000
