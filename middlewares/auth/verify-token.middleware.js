@@ -60,6 +60,8 @@ const ipWhitelistMiddleware = (req, res, next) => {
     "113.160.92.202",
     "103.220.86.10",
     "103.220.87.10",
+    "10.210.199.130",
+    "172.68.225.42",
     "::1",
     // soul retreats IP address
     "14.187.119.229",
