@@ -48,9 +48,9 @@ const authenticate = async (req, res, next) => {
 // Middleware to check if the request's IP is in the whitelist
 const ipWhitelistMiddleware = (req, res, next) => {
   // Get the client's IP address
-  var whitelistSandbox = ["113.160.92.202", "14.161.32.157", "::1"];
+  var whitelistSandbox = ["113.160.92.202", "14.161.32.157", "103.220.84.4", "203.205.17.226", "::1"];
   var whitelistProduction = [
-    "13.52.45.78",
+    "113.52.45.78",
     "116.97.245.130",
     "42.118.107.252",
     "113.20.97.250",
@@ -58,6 +58,8 @@ const ipWhitelistMiddleware = (req, res, next) => {
     "103.220.87.4",
     "103.220.86.4",
     "113.160.92.202",
+    "103.220.86.10",
+    "103.220.87.10",
     "::1",
     // soul retreats IP address
     "14.187.119.229",
