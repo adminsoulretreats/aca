@@ -409,8 +409,10 @@ const vnpay_ipn = async (req, res) => {
           vnp_Params["vnp_TransactionStatus"] !== "00"
         ) {
           order[0].status = "2";
+          console.log("order[0].status = 2");
         } else {
           order[0].status = "1";
+          console.log("order[0].status = 1");
           // update user / schedule
           let user_id = order[0].user_id;
           let product = order[0].product;
