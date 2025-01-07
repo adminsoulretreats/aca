@@ -68,7 +68,7 @@ const ipWhitelistMiddleware = (req, res, next) => {
     "14.161.32.157",
   ];
   var whitelist =
-    process.env.VNPAY === "production" ? whitelistProduction : whitelistSandbox;
+    process.env.NODE_ENV === "production" ? whitelistProduction : whitelistSandbox;
 
   const clientIp =
     req.headers["x-forwarded-for"] ||
