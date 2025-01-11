@@ -33,7 +33,7 @@ rootRouter.use("/question", questionRouter);
 rootRouter.use("/video", videoRouter);
 rootRouter.use("/order", orderRouter);
 rootRouter.use("/logvnpay", logvnpayRouter);
-rootRouter.use("newBlog", newBlogRouter)
+rootRouter.use("/newBlog", newBlogRouter)
 rootRouter.get("/demo", (req, res) => {
   return res.send({
     status: "success",
