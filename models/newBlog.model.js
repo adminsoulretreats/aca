@@ -3,7 +3,7 @@ const { Schema, model } = require("mongoose");
 const contentSchema = new Schema({
     type: {
         type: String,
-        enum: ['heading', 'text', 'image'],
+        enum: ['heading', 'text', 'image', 'imgNote'],
         required: true
     },
     content: {
@@ -22,6 +22,9 @@ const NewBlogSchema = new Schema({
         require: true
     },
     img: {
+        type: String,
+    },
+    imgNote: {
         type: String,
     },
     title: {

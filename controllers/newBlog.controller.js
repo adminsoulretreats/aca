@@ -3,10 +3,10 @@ const { NewBlog } = require("../models/newBlog.model");
 // Create a new blog
 const createNewBlog = async (req, res) => {
     try {
-        const { id, img, imgBackground, title, description, tags, content } = req.body;
+        const { id, img, imgBackground, title, description, tags, content, imgNote } = req.body;
 
         // Check if all required fields are present
-        if (!title || !imgBackground) {
+        if (!title || !imgBackground || !id) {
             return res.status(400).json({ message: 'Missing required fields.' });
         }
 
@@ -16,6 +16,7 @@ const createNewBlog = async (req, res) => {
             imgBackground,
             title,
             description,
+            imgNote,
             tags,
             content
         });
