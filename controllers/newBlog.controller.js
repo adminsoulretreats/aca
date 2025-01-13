@@ -57,8 +57,23 @@ const getBlogById = async (req, res) => {
     }
 }
 
+// Get the first 4 recent blogs
+const get4RecentBlogs = async (req, res) => {
+    try {
+        const recentBlogs = await NewBlog.find()
+            .sort({ createdAt: -1 })
+            .limit(4);
+
+        res.status(200).json(recentBlogs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 module.exports = {
     createNewBlog,
     getAllBlogs,
     getBlogById,
+    get4RecentBlogs,
 };
