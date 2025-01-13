@@ -15,12 +15,10 @@ const contentSchema = new Schema({
 const NewBlogSchema = new Schema({
     id: {
         type: Number,
-        required: true,
         unique: true
     },
     img: {
         type: String,
-        required: true
     },
     title: {
         type: String,
@@ -28,7 +26,6 @@ const NewBlogSchema = new Schema({
     },
     description: {
         type: String,
-        required: true
     },
     tags: [{
         type: String
