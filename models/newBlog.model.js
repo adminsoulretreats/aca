@@ -17,6 +17,10 @@ const NewBlogSchema = new Schema({
         type: Number,
         unique: true
     },
+    imgBackground: {
+        type: String,
+        require: true
+    },
     img: {
         type: String,
     },
