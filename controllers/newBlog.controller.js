@@ -6,7 +6,7 @@ const createNewBlog = async (req, res) => {
         const { id, img, title, description, tags, content } = req.body;
 
         // Check if all required fields are present
-        if (!id || !title) {
+        if (!title) {
             return res.status(400).json({ message: 'Missing required fields.' });
         }
 
