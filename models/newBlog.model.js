@@ -21,6 +21,11 @@ const NewBlogSchema = new Schema({
         type: String,
         require: true
     },
+    standOut: {
+        type: Boolean,
+        default: false,
+        require: true
+    },
     img: {
         type: String,
     },
@@ -35,7 +40,9 @@ const NewBlogSchema = new Schema({
         type: String,
     },
     tags: [{
-        type: String
+        type: String,
+        enum: ['option1', 'option2', 'option3', 'option4'],
+        required: true
     }],
     content: [contentSchema]
 }, {
