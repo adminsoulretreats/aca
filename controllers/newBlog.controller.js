@@ -92,10 +92,28 @@ const getBlogsByTag = async (req, res) => {
     }
 };
 
+const deleteBlog = async (req, res) => {
+    try {
+        const blogId = req.params.id;
+
+        const blog = await NewBlog.findOneAndDelete({ id: blogId });
+
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog not found' });
+        }
+
+        res.status(200).json({ message: 'Blog deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 module.exports = {
     createNewBlog,
     getAllBlogs,
     getBlogById,
     get4RecentBlogs,
     getBlogsByTag,
+    deleteBlog,
 };

@@ -17,6 +17,8 @@ newBlogRouter.get('/get-blog/:id', newBlogController.getBlogById);
 // Route to get blogs by tag
 newBlogRouter.get('/get-blog/tags/:tag', newBlogController.getBlogsByTag);
 
+// Route to delete a blog
+newBlogRouter.delete('/delete-blog/:id', newBlogController.deleteBlog);
 
 module.exports = {
     newBlogRouter,
