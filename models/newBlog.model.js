@@ -42,7 +42,7 @@ const NewBlogSchema = new Schema({
     //'Chuỗi Khóa Học The Origins', 'Câu Chuyện Học Viên ', 'Bài Học Từ Mr Vas', 'Sự Kiện Nổi Bật'
     tags: [{
         type: Number,
-        enum: ['0', '1', '2', '3'],
+        enum: [0, 1, 2, 3],
         required: true
     }],
     content: [contentSchema]
