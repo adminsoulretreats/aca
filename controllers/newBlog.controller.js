@@ -72,9 +72,30 @@ const get4RecentBlogs = async (req, res) => {
     }
 };
 
+// Get the blogs by tag
+const getBlogsByTag = async (req, res) => {
+    try {
+        const { tag } = req.params; // Extract the tag from the route parameters
+
+        if (!tag) {
+            return res.status(400).json({ message: "Tag is required" });
+        }
+
+        // Fetch blogs that match the given tag, sort by createdAt
+        const recentBlogsByTag = await NewBlog.find({ tags: { $in: [tag] } })
+            .sort({ createdAt: -1 })
+
+        res.status(200).json(recentBlogsByTag);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 module.exports = {
     createNewBlog,
     getAllBlogs,
     getBlogById,
     get4RecentBlogs,
+    getBlogsByTag,
 };

@@ -39,9 +39,10 @@ const NewBlogSchema = new Schema({
     description: {
         type: String,
     },
+    //'Chuỗi Khóa Học The Origins', 'Câu Chuyện Học Viên ', 'Bài Học Từ Mr Vas', 'Sự Kiện Nổi Bật'
     tags: [{
-        type: String,
-        enum: ['Chuỗi Khóa Học The Origins', 'Câu Chuyện Học Viên ', 'Bài Học Từ Mr Vas', 'Sự Kiện Nổi Bật'],
+        type: Number,
+        enum: ['0', '1', '2', '3'],
         required: true
     }],
     content: [contentSchema]

@@ -14,6 +14,9 @@ newBlogRouter.get('/get-recent-4-blogs', newBlogController.get4RecentBlogs);
 // Route to get a specific blog by id
 newBlogRouter.get('/get-blog/:id', newBlogController.getBlogById);
 
+// Route to get blogs by tag
+newBlogRouter.get('/get-blog/tags/:tag', newBlogController.getBlogsByTag);
+
 
 module.exports = {
     newBlogRouter,
