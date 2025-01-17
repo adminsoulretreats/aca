@@ -108,6 +108,28 @@ const deleteBlog = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+const updateBlog = async (req, res) => {
+    try {
+        const blogId = req.params.id;
+        const updatedData = req.body; // This will contain the updated fields
+
+        // Find the blog by ID and update it with the new data
+        const blog = await NewBlog.findOneAndUpdate(
+            { id: blogId },
+            updatedData,
+            { new: true } // Option to return the updated document
+        );
+
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog not found' });
+        }
+
+        res.status(200).json({ message: 'Blog updated successfully', blog });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
 
 module.exports = {
     createNewBlog,
@@ -116,4 +138,5 @@ module.exports = {
     get4RecentBlogs,
     getBlogsByTag,
     deleteBlog,
+    updateBlog,
 };
