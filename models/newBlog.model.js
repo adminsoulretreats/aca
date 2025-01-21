@@ -3,12 +3,15 @@ const { Schema, model } = require("mongoose");
 const contentSchema = new Schema({
     type: {
         type: String,
-        enum: ['heading', 'text', 'image', 'imgNote'],
+        enum: ['heading', 'text', 'image', 'imgNote', 'heading2', 'heading3'],
         required: true
     },
     content: {
         type: String,
         required: true
+    },
+    color: {
+        type: String,
     }
 }, { _id: false });
 
