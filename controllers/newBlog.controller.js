@@ -3,7 +3,7 @@ const { NewBlog } = require("../models/newBlog.model");
 // Create a new blog
 const createNewBlog = async (req, res) => {
     try {
-        const { id, img, imgBackground, title, description, tags, content, imgNote, standOut } = req.body;
+        const { id, img, imgBackground, title, description, tags, content, imgNote, standOut, heading2, heading3, color } = req.body;
 
         // Check if all required fields are present
         if (!title || !imgBackground || !id) {
@@ -17,6 +17,9 @@ const createNewBlog = async (req, res) => {
             title,
             description,
             imgNote,
+            heading2,
+            heading3,
+            color,
             tags,
             content,
             standOut
