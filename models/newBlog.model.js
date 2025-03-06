@@ -16,42 +16,20 @@ const contentSchema = new Schema({
 }, { _id: false });
 
 const NewBlogSchema = new Schema({
-    id: {
-        type: Number,
-        unique: true
-    },
-    imgBackground: {
-        type: String,
-        require: true
-    },
-    standOut: {
-        type: Boolean,
-        default: false,
-        require: true
-    },
-    img: {
-        type: String,
-    },
-    imgNote: {
-        type: String,
-    },
-    title: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-    },
-    //'Chuỗi Khóa Học The Origins', 'Câu Chuyện Học Viên ', 'Bài Học Từ Mr Vas', 'Sự Kiện Nổi Bật'
-    tags: [{
-        type: Number,
-        enum: [0, 1, 2, 3],
-        required: true
-    }],
-    content: String,
-}, {
-    timestamps: true
-});
+    id: { type: Number, unique: true, required: true },
+    imgBackground: { type: String, required: true },
+    standOut: { type: Boolean, default: false, required: true },
+    title: { type: String, required: true },
+    tags: { type: [Number], enum: [0, 1, 2, 3], default: [], required: true },
+
+    // Nội dung của bài viết sẽ được lưu dưới dạng HTML từ Quill.js
+    content: { type: String, required: true },
+
+    // Các trường không bắt buộc
+    img: String,
+    imgNote: String,
+    description: String
+}, { timestamps: true });
 
 const NewBlog = model('NewBlog', NewBlogSchema);
 
