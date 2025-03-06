@@ -48,7 +48,7 @@ const NewBlogSchema = new Schema({
         enum: [0, 1, 2, 3],
         required: true
     }],
-    content: [contentSchema]
+    content: String,
 }, {
     timestamps: true
 });
