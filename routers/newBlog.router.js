@@ -23,6 +23,9 @@ newBlogRouter.delete('/delete/:id', newBlogController.deleteBlog);
 // Route to update a blog
 newBlogRouter.put('/update/:id', newBlogController.updateBlog);
 
+// Route to search for blogs
+newBlogRouter.get('/search/', newBlogController.searchBlogsByTitle);
+
 module.exports = {
     newBlogRouter,
 };
