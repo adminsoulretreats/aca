@@ -28,12 +28,12 @@ const NewBlogSchema = new Schema({
     // Các trường không bắt buộc
     img: String,
     imgNote: String,
-    description: String
+    description: String,
 }, { timestamps: true });
 
 const NewBlog = model('NewBlog', NewBlogSchema);
 
 module.exports = {
     NewBlog,
-    NewBlogSchema,
+    NewBlogSchema
 };
