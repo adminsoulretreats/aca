@@ -169,7 +169,7 @@ const searchBlogsByTitle = async (req, res) => {
         }
 
         const processedBlogs = blogs.map((blog) => {
-            console.log(blog.content);
+            // console.log(blog.content);
             const plainTextContent = convertHtmlToText(blog.content ?? ""); // Đảm bảo không lỗi
             const truncatedContent = truncateText(plainTextContent, 300);
 
