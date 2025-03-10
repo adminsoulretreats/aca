@@ -10,15 +10,48 @@ const truncateText = (text, maxLength) => {
     return text.slice(0, maxLength) + "...";
 };
 
+// Hàm chuyển đổi title thành slug
+const convertToSlug = (text) => {
+    const a = 'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ';
+    const b = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd';
+    const p = new RegExp(a.split('').join('|'), 'g');
+
+    return text.toLowerCase()
+        .replace(p, c => b.charAt(a.indexOf(c))) // Thay thế các ký tự có dấu
+        .replace(/[^\w\s-]/g, '') // Xóa các ký tự đặc biệt
+        .replace(/\s+/g, '-') // Thay thế khoảng trắng bằng dấu gạch ngang
+        .replace(/-+/g, '-') // Xóa các dấu gạch ngang liên tiếp
+        .replace(/^-+/, '') // Xóa dấu gạch ngang ở đầu
+        .replace(/-+$/, ''); // Xóa dấu gạch ngang ở cuối
+};
+
+// Hàm tạo ID duy nhất từ title
+const generateUniqueId = async (baseTitle) => {
+    const baseId = convertToSlug(baseTitle);
+    let id = baseId;
+    let counter = 1;
+
+    // Kiểm tra xem id đã tồn tại chưa
+    while (await NewBlog.findOne({ id })) {
+        id = `${baseId}-${counter}`;
+        counter++;
+    }
+
+    return id;
+};
+
 // Create a new blog
 const createNewBlog = async (req, res) => {
     try {
-        const { id, img, imgBackground, title, description, tags, content, imgNote, standOut, heading2, heading3, color } = req.body;
+        const { img, imgBackground, title, description, tags, content, imgNote, standOut, heading2, heading3, color } = req.body;
 
         // Check if all required fields are present
-        if (!title || !imgBackground || !id) {
+        if (!title || !imgBackground) {
             return res.status(400).json({ message: 'Missing required fields.' });
         }
+
+        // Tạo id từ title
+        const id = await generateUniqueId(title);
 
         const newBlog = new NewBlog({
             id,
@@ -27,8 +60,6 @@ const createNewBlog = async (req, res) => {
             title,
             description,
             imgNote,
-            heading2,
-            heading3,
             color,
             tags,
             content,
@@ -76,7 +107,6 @@ const getBlogById = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
-
 
 // Get the first 4 recent blogs
 const get4RecentBlogs = async (req, res) => {
@@ -128,10 +158,17 @@ const deleteBlog = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 const updateBlog = async (req, res) => {
     try {
         const blogId = req.params.id;
         const updatedData = req.body; // This will contain the updated fields
+
+        // If title is being updated, generate new id
+        if (updatedData.title) {
+            const newId = await generateUniqueId(updatedData.title);
+            updatedData.id = newId;
+        }
 
         // Find the blog by ID and update it with the new data
         const blog = await NewBlog.findOneAndUpdate(

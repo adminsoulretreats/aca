@@ -16,7 +16,7 @@ const contentSchema = new Schema({
 }, { _id: false });
 
 const NewBlogSchema = new Schema({
-    id: { type: Number, unique: true, required: true },
+    id: { type: String, unique: true, required: true },
     imgBackground: { type: String, required: true },
     standOut: { type: Boolean, default: false, required: true },
     title: { type: String, required: true },
