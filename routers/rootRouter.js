@@ -20,6 +20,8 @@ const { orderRouter } = require("./order.router");
 const { logvnpayRouter } = require("./logvnpay.router");
 const { newBlogRouter } = require("./newBlog.router")
 const { commentRouter } = require("./comment.router")
+const { staticticsRouter } = require("./statictics.router")
+const { chatRouter } = require("./chat.router")
 rootRouter.use("/users", userRouter);
 rootRouter.use("/auth", authRouter);
 rootRouter.use("/category", categoryRouter);
@@ -36,6 +38,8 @@ rootRouter.use("/order", orderRouter);
 rootRouter.use("/logvnpay", logvnpayRouter);
 rootRouter.use("/newBlog", newBlogRouter)
 rootRouter.use("/comment", commentRouter)
+rootRouter.use("/statistics", staticticsRouter)
+rootRouter.use("/chat", chatRouter)
 rootRouter.get("/demo", (req, res) => {
   return res.send({
     status: "success",
