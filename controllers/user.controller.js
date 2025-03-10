@@ -177,14 +177,7 @@ const deleteAvatar = async (req, res) => {
 
     const deleteUserAvatar = await User.findById(user._id).exec();
 
-    // const getFileAvatarname = deleteUserAvatar.avatar
-    //   .split("/")
-    //   .slice(-1)
-    //   .pop();
-
     try {
-      // fs.unlinkSync(`${getFileAvatarname}`);
-
       if (deleteUserAvatar) {
         await User.findByIdAndUpdate(user._id, {
           avatar: "",
@@ -208,42 +201,14 @@ const deleteAvatar = async (req, res) => {
   }
 };
 
-const hello = async (req, res) => {
-  const query = {};
-  let total;
-
-  if (req.query.keyword) {
-    query.$or = [
-      { email: { $regex: req.query.keyword || "", $options: "i" } },
-      { name: { $regex: req.query.keyword || "", $options: "i" } },
-      { phone: { $regex: req.query.keyword || "", $options: "i" } },
-    ];
-  }
-
-  if (req.query.role) {
-    query.role = req.query.role;
-  }
-
-  if (req.query.gender) {
-    query.gender = req.query.gender;
-  }
-
+const getMountainStats = async (req, res) => {
   try {
-    const userList = await User.find(query)
-      .skip(parseInt(req.query.skip))
-      .limit(parseInt(req.query.limit))
-      .exec();
-
-    const count = await User.countDocuments(query);
-
-    return res.json({
-      data: userList,
-      total: count,
-    });
+    console.log('hello')
+    // res 200
   } catch (error) {
-    return res.json({
+    res.status(500).send({
       status: "failed",
-      message: error,
+      message: error.message
     });
   }
 };
@@ -258,11 +223,10 @@ const getTopUsersByPower = async (req, res) => {
 };
 
 const sendFormContact = (req, res) => {
-  // const { file } = req;
   const { name, email } = req.body;
   const htmlTemplate = `<div>
   <h1>
-    Xin chào, bạn vừa gửi thông tin liên hệ tại LIFE UNI.
+    Xin chào, bạn vừa gửi thông tin liên hệ tại Soul Retreats.
   </h1>
 
   <p>Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.</p>
@@ -270,11 +234,10 @@ const sendFormContact = (req, res) => {
   `;
 
   try {
-    mailer(email, "Thông Tin Liên Hệ Life Uni", htmlTemplate);
+    mailer(email, "Thông Tin Liên Hệ Soul Retreats", htmlTemplate);
 
     res.status(200).send({
       status: "success",
-      token: token,
       message: htmlTemplate,
     });
   } catch (error) {
@@ -294,7 +257,7 @@ module.exports = {
   deleteAvatar,
   updateWithRoleClient,
   updateWithRoleAdmin,
-  hello,
+  getMountainStats,
   sendFormContact,
   getTopUsersByPower,
 };

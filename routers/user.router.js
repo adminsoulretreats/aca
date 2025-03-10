@@ -13,6 +13,7 @@ const {
   updateWithRoleClient,
   updateWithRoleAdmin,
   getTopUsersByPower,
+  getMountainStats,
   // hello,
 } = require("../controllers/user.controller");
 
@@ -61,7 +62,7 @@ userRouter.post(
 
 userRouter.post("/delete-avatar", authenticate, deleteAvatar);
 userRouter.post("/send-form-contact", sendFormContact);
-
+userRouter.get("/mountain-stats", getMountainStats);
 module.exports = {
   userRouter,
 };
