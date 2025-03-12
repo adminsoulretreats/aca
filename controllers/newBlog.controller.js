@@ -17,6 +17,7 @@ const convertToSlug = (text) => {
     const p = new RegExp(a.split('').join('|'), 'g');
 
     return text.toLowerCase()
+        .replace(/đ/g, 'd') // Thay thế chữ đ thành d trước
         .replace(p, c => b.charAt(a.indexOf(c))) // Thay thế các ký tự có dấu
         .replace(/[^\w\s-]/g, '') // Xóa các ký tự đặc biệt
         .replace(/\s+/g, '-') // Thay thế khoảng trắng bằng dấu gạch ngang
