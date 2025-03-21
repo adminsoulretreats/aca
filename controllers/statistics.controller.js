@@ -53,6 +53,56 @@ const getOnlineCourseStatistics = async (req, res) => {
     }
 };
 
+const getAccountStatistics = async (req, res) => {
+    try {
+        // Lấy tổng số lượng user
+        const totalUsers = await User.countDocuments();
+
+        // Lấy danh sách user đã đăng ký ít nhất một khóa học
+        const registeredUsers = await User.find({
+            $or: [
+                { 'mountainRegister.fansipan': true },
+                { 'mountainRegister.kinabalu': true },
+                { 'mountainRegister.kilimanjaro': true },
+                { 'mountainRegister.aconcaqua': true }
+            ]
+        }).select('name phone email');
+
+        // Đếm số lượng user đăng ký mỗi khóa học
+        const countByCourse = await User.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    fansipan: { $sum: { $cond: [{ $eq: ["$mountainRegister.fansipan", true] }, 1, 0] } },
+                    kinabalu: { $sum: { $cond: [{ $eq: ["$mountainRegister.kinabalu", true] }, 1, 0] } },
+                    kilimanjaro: { $sum: { $cond: [{ $eq: ["$mountainRegister.kilimanjaro", true] }, 1, 0] } },
+                    aconcaqua: { $sum: { $cond: [{ $eq: ["$mountainRegister.aconcaqua", true] }, 1, 0] } }
+                }
+            }
+        ]);
+
+        if (!registeredUsers.length) {
+            return res.status(404).json({
+                success: false,
+                message: "No registered users found",
+                totalUsers
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            totalUsers,
+            registeredUserCount: registeredUsers.length,
+            courseRegistrationCounts: countByCourse[0] || { fansipan: 0, kinabalu: 0, kilimanjaro: 0, aconcaqua: 0 },
+            data: registeredUsers
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error getting account statistics", error: error.message });
+    }
+};
+
+
+
 
 // // Get statistics for offline courses
 // const getOfflineCourseStatistics = async (req, res) => {
@@ -107,6 +157,7 @@ const getOnlineCourseStatistics = async (req, res) => {
 
 module.exports = {
     getOnlineCourseStatistics,
+    getAccountStatistics,
     // getOfflineCourseStatistics,
     // getPlatformStatistics
 }; 

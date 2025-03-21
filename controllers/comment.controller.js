@@ -25,6 +25,8 @@ const { NewBlog } = require('../models/newBlog.model');
 const getCommentsByBlogId = async (req, res) => {
     try {
         const { blogId } = req.params;
+
+        // Không cần kiểm tra ObjectId vì blogId đã được đổi sang text
         const comments = await Comment.find({ blogId })
             .sort({ createdAt: -1 })
             .populate('account', 'name email'); // Populate account information

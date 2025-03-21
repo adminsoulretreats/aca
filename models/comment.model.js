@@ -12,7 +12,7 @@ const { Schema, model } = require("mongoose");
  */
 const CommentSchema = new Schema({
     blogId: {
-        type: Number,
+        type: String,
         required: true,
         ref: 'NewBlog' // References the NewBlog model
     },
