@@ -36,20 +36,59 @@ function objectToQueryParams(obj) {
 
 const getListOrder = async (req, res) => {
   try {
-    const { page, limit, txtSearch } = req.query; // Number of documents per page
+    // Get pagination parameters with defaults
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+
+    // Get filter parameters
+    const { txtSearch, status, startDate, endDate, sortBy, sortOrder } = req.query;
+
+    // Build filter object
     const filter = {
-      $or: [
-        { email: { $regex: txtSearch || "", $options: "i" } },
-        { name: { $regex: txtSearch || "", $options: "i" } },
-        { phone: { $regex: txtSearch || "", $options: "i" } },
-      ],
+      status: status || "1" // Default to status = 1, but allow it to be changed to 0 or 2
     };
 
-    // const limit = 10; // Number of documents per page
-    // const page = 2; // For example, fetch the second page
-    // const skip = (page - 1) * limit;
+    // If using route that requires user-specific data, use req.user
+    // Otherwise this is an admin route without specific user filtering
+    if (req.path === '/my-orders' && req.user?._id) {
+      filter.user_id = ObjectID(req.user._id);
+    }
+
+    // Add text search if provided
+    if (txtSearch) {
+      filter.$or = [
+        { vnp_TxnRef: { $regex: txtSearch, $options: "i" } },
+        { vnp_OrderInfo: { $regex: txtSearch, $options: "i" } },
+        { "product.user.first_name": { $regex: txtSearch, $options: "i" } },
+        { "product.user.email": { $regex: txtSearch, $options: "i" } },
+        { "product.user.phone": { $regex: txtSearch, $options: "i" } }
+      ];
+    }
+
+    // Add date range filter if provided
+    if (startDate || endDate) {
+      filter.vnp_CreateDate = {};
+      if (startDate) {
+        filter.vnp_CreateDate.$gte = startDate;
+      }
+      if (endDate) {
+        filter.vnp_CreateDate.$lte = endDate;
+      }
+    }
+
+    // Determine sort options (default to newest first)
+    const sortOptions = {};
+    sortOptions[sortBy || 'vnp_CreateDate'] = sortOrder === 'asc' ? 1 : -1;
+
+    // First, get total count for pagination info
+    const totalCount = await Order.countDocuments(filter);
+
+    // Then get the paginated data with user details using aggregation
     const orderList = await Order.aggregate([
+      {
+        $match: filter
+      },
       {
         $lookup: {
           from: "users",
@@ -58,28 +97,61 @@ const getListOrder = async (req, res) => {
           as: "user",
         },
       },
-      { unwind: "$user" },
-      // {
-      //   $match: filter,
-      // },
       {
-        $sort: {
-          vnp_CreateDate: -1,
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true, // Keep orders even if user not found
         },
       },
       {
-        $skip: skip, // Skip documents for pagination (based on page number).
+        $sort: sortOptions,
       },
       {
-        $limit: parseInt(limit), // Limit to a number of results per page.
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $project: {
+          _id: 1,
+          vnp_Amount: 1,
+          vnp_TxnRef: 1,
+          vnp_OrderInfo: 1,
+          vnp_CreateDate: 1,
+          status: 1,
+          product: 1,
+          "user._id": 1,
+          "user.email": 1,
+          "user.name": 1,
+          "user.phone": 1,
+        },
       },
     ]).exec();
-    console.log("orderList", orderList);
-    res.status(200).send({ status: "success", data: orderList });
+
+    // Return paginated results with metadata
+    res.status(200).json({
+      status: "success",
+      data: {
+        orders: orderList,
+        pagination: {
+          total: totalCount,
+          page,
+          limit,
+          pages: Math.ceil(totalCount / limit),
+        },
+      },
+    });
   } catch (error) {
-    res.status(500).send(error);
+    console.error("Error fetching order list:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Failed to fetch order list",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
+
 const getOrderDetails = async (req, res) => {
   try {
     const { vnp_TxnRef } = req.query;
@@ -149,7 +221,7 @@ const createPaymentUrl = async (req, res) => {
     vnp_Params["vnp_ReturnUrl"] = returnUrl;
 
     // return will auto post
-    vnp_Params["vnp_Amount"] = amount * 100;
+    vnp_Params["vnp_Amount"] = amount * 100; // ? * 100
     vnp_Params["vnp_TmnCode"] = tmnCode;
     vnp_Params["vnp_TxnRef"] = orderId + ipAddr.replace(/[^a-zA-Z0-9]/g, "");
     vnp_Params["vnp_OrderInfo"] = "Thanh_toan_cho_ma_GD_" + orderId;
@@ -172,6 +244,7 @@ const createPaymentUrl = async (req, res) => {
       product: JSON.parse(checkout),
       user_id: ObjectID(user_id),
     });
+
     console.log("vnp_Params", vnp_Params);
     await newOrder.save();
     vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
@@ -205,6 +278,7 @@ const vnpay_return = async (req, res) => {
 
     if (secureHash === signed) {
       var vnp_TxnRef = vnp_Params["vnp_TxnRef"];
+      // console.log("vnp_TxnRef", vnp_TxnRef);
       const order = await Order.find({
         vnp_TxnRef: vnp_TxnRef,
       });
@@ -726,6 +800,53 @@ const getDetailRefundVnpay = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+const getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || !ObjectID.isValid(id)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid order ID",
+      });
+    }
+
+    const order = await Order.findById(id).populate("user_id", "name email phone");
+
+    if (!order) {
+      return res.status(404).json({
+        status: "error",
+        message: "Order not found",
+      });
+    }
+
+    // No permission check needed if this is an admin-only route
+    // If you want to check for specific user, uncomment this
+    /*
+    if (req.user && req.user._id && req.path !== '/list' && 
+       order.user_id._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        status: "error",
+        message: "You don't have permission to view this order",
+      });
+    }
+    */
+
+    res.status(200).json({
+      status: "success",
+      data: order,
+    });
+  } catch (error) {
+    console.error("Error fetching order by ID:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Failed to fetch order details",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
 module.exports = {
   createPaymentUrl,
   vnpay_return,
@@ -734,4 +855,5 @@ module.exports = {
   getOrderDetails,
   getDetailPaymentVnpay,
   getDetailRefundVnpay,
+  getOrderById,
 };
